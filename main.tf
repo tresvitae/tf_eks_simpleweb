@@ -127,3 +127,18 @@ provider "kubernetes" {
   token                  = data.aws_eks_cluster_auth.eks.token
 }
 
+resource "kubernetes_service" "example" {
+  metadata {
+    name = "terraform-exmaple"
+  }
+  spec {
+    selector = {
+      test = "MyExampleApp"
+    }
+    port {
+      port        = 80
+      target_port = 80
+    }
+    type = "LoadBalancer"
+  }
+}

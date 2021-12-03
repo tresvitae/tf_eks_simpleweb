@@ -145,3 +145,49 @@ data "aws_eks_cluster" "cluster" {
 data "aws_eks_cluster_auth" "cluster" {
   name = module.eks.cluster_id
 }
+
+resource "kubernetes_deployment" "nginx" {
+  metadata {
+    name = "eks-nginx-deployment"
+    labels = {
+      App = "TheExampleApp"
+    }
+  }
+
+  spec {
+    replicas = 2
+    selector {
+      match_labels = {
+        App = "TheExampleApp"
+      }
+    }
+    template {
+      metadata {
+        labels = {
+          App = "TheExampleApp"
+        }
+      }
+      spec {
+        container {
+          image = "nginx:1.7.8"
+          name  = "eks-nginx"
+
+          port {
+            container_port = 80
+          }
+
+          resources {
+            limits = {
+              cpu    = "0.5"
+              memory = "512Mi"
+            }
+            requests = {
+              cpu    = "250m"
+              memory = "50Mi"
+            }
+          }
+        }
+      }
+    }
+  }
+}

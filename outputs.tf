@@ -1,3 +1,7 @@
+output "lb_ip" {
+  value = kubernetes_service.nginx-service.status.0.load_balancer.0.ingress.0.hostname
+}
+
 output "cluster_id" {
   description = "EKS cluster ID."
   value       = module.eks.cluster_id

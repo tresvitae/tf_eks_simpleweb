@@ -82,17 +82,13 @@ resource "aws_security_group" "all_worker_mgmt" {
   }
 }
 
-# You should **not** schedule deployments and services in this workspace. This keeps workspaces modular (one for provision EKS, another for scheduling Kubernetes resources) as per best practices.
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  token                  = data.aws_eks_cluster_auth.cluster.token
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-}
 
+
+## KUBERNETES ##
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = var.cluster_name
-  cluster_version = "1.20"
+  cluster_version = "1.21"
   subnets         = module.vpc.private_subnets
 
   tags = {
@@ -167,5 +163,21 @@ resource "kubernetes_deployment" "nginx" {
         }
       }
     }
+  }
+}
+
+resource "kubernetes_service" "nginx-service" {
+  metadata {
+    name = "nginx-example"
+  }
+  spec {
+    selector = {
+      App = kubernetes_deployment.nginx.spec.0.template.0.metadata[0].labels.App
+    }
+    port {
+      port        = 80
+      target_port = 80
+    }
+    type = "LoadBalancer"
   }
 }

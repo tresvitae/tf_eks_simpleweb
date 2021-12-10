@@ -114,6 +114,11 @@ module "eks" {
   ]
 }
 
+resource "aws_iam_role_policy_attachment" "metrics_policy" {
+  role       = module.eks.worker_iam_role_name
+  policy_arn = "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy"
+}
+
 data "aws_eks_cluster" "cluster" {
   name = module.eks.cluster_id
 }

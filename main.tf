@@ -230,3 +230,23 @@ resource "kubernetes_horizontal_pod_autoscaler" "example" {
     }
   }
 }
+
+resource "aws_sqs_queue" "eks_queue" {
+  name                      = "delete-nginx-pod"
+  delay_seconds             = 90
+  receive_wait_time_seconds = 10
+}
+
+
+
+data "aws_sns_topic" "sns" {
+  name = aws_sns_topic.topic.name
+}
+resource "aws_sns_topic" "topic" {
+  name = "eks_topic"
+}
+resource "aws_sns_topic_subscription" "subscribers" {
+  topic_arn = data.aws_sns_topic.sns.arn
+  protocol  = "email"
+  endpoint  = "patryk.futa@gmail.com"
+}

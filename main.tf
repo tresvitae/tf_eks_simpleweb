@@ -231,13 +231,36 @@ resource "kubernetes_horizontal_pod_autoscaler" "example" {
   }
 }
 
+
 resource "aws_sqs_queue" "eks_queue" {
   name                      = "delete-nginx-pod"
   delay_seconds             = 90
   receive_wait_time_seconds = 10
 }
+resource "aws_sqs_queue_policy" "sqs_policy" {
+  queue_url = aws_sqs_queue.eks_queue.id
 
-
+  policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Id": "sqspolicy",
+  "Statement": [
+    {
+      "Sid": "First",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": "sqs:SendMessage",
+      "Resource": "${aws_sqs_queue.eks_queue.arn}",
+      "Condition": {
+        "ArnEquals": {
+          "aws:SourceArn": "${data.aws_sns_topic.sns.arn}"
+        }
+      }
+    }
+  ]
+}
+POLICY
+}
 
 data "aws_sns_topic" "sns" {
   name = aws_sns_topic.topic.name

@@ -21,6 +21,8 @@ kubectl apply -f cwagent-configmap.yaml  # change cluster name if necessary
 kubectl apply -f https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/cwagent/cwagent-daemonset.yaml
 kubectl get pods -n amazon-cloudwatch
 ```
+## Verify CloudWatch Container Insights is working 
+https://console.aws.amazon.com/cloudwatch/home?region=${AWS_REGION}#cw:dashboard=Container;context=~(clusters~'eksworkshop-eksctl~dimensions~(~)~performanceType~'Service)"
 ## Delete CloudWatch Container Insights
 ```
 curl https://raw.githubusercontent.com/aws-samples/amazon-cloudwatch-container-insights/latest/k8s-deployment-manifest-templates/deployment-mode/daemonset/container-insights-monitoring/quickstart/cwagent-fluentd-quickstart.yaml | sed "s/{{cluster_name}}/$(terraform output -raw cluster_name)/;s/{{region_name}}/$(terraform output -raw region)/" | kubectl delete -f -

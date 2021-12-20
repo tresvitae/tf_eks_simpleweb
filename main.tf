@@ -207,6 +207,9 @@ resource "kubernetes_service" "nginx-service" {
     }
     type = "LoadBalancer"
   }
+  provisioner "local-exec" {
+    command = "${path.module}/install-cloudwatch-ci.sh"
+  }
 }
 
 # HPA with behavior autoscaling
